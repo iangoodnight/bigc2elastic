@@ -1,0 +1,26 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+lib-cov
+
+coverage
+
+# Optional npm cache directory
+.npm
+
+# eslint cache
+.eslintcache
+
+# Dependencies
+node_modules/
+
+# dotenv
+.env

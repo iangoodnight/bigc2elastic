@@ -1,0 +1,16 @@
+{
+  "name": "bigc2elastic",
+  "version": "1.0.0",
+  "description": "Slurp up products through the BigC API and push them right back up to Elastic Search.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ian Goodnight",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "chalk": "^4.1.1",
+    "dotenv": "^10.0.0"
+  }
+}
