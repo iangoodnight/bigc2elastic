@@ -1,37 +1,75 @@
-## Welcome to GitHub Pages
+# bigc2elastic
 
-You can use the [editor on GitHub](https://github.com/iangoodnight/bigc2elastic/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+A lightweight CLI utility designed to pull product and category data from
+BigCommerce stores and push that data back up to an elasticsearch instance.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+# What it does
 
-### Markdown
+Running this utility will:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+- Query BigCommerce for categories
+- Check returned categories for `is_visible`
+- Attempt to delete any hidden categories from elasticsearch (if they exist)
+- POST the remaining categories to elasticsearch, updating them if changed
+- Query BigCommerce for products
+- Check returned products for `is_visible`
+- Attempt to delete any hidden products from elasticsearch (if they exist)
+- POST the remaining products to elasticsearch, updating them if changed
+- Output all steps and process colorfully to the terminal
 
-```markdown
-Syntax highlighted code block
+# CLI Flags
 
-# Header 1
-## Header 2
-### Header 3
+Optional flags include:
 
-- Bulleted
-- List
+- `--products-only` (ie: `bigc2elastic --products-only`)
+- `--drop` (ie: `bigc2elastic --drop`)
 
-1. Numbered
-2. List
+Running the CLI with the `--products-only` flag still queries BigCommerce for 
+categories to decorate products with their cateogry names, but it will not drop
+or update categories within elasticsearch.
 
-**Bold** and _Italic_ and `Code` text
+Running the CLI with the `--drop` flag will drop all existing documents from
+elasticsearch before beginning the updates (effectively starting clean).
 
-[Link](url) and ![Image](src)
-```
+## Setup
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+1. First install nvm with `curl
+   https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash`
+   on Debian-based systems, update your environment settings with `source
+   ~/.profile`, and install node with `nvm install latest` (alternatively,
+   check out https://nodejs.org/en/download/ for other installation options).
+2. Pull the repository down to your local machine by cloning the repository.
+  - By [installing git](https://github.com/git-guides/install-git) and running:
+    `cd /opt/ && git clone https://github.com/iangoodnight/bigc2elastic.git`
+  - Or using cUrl with:
+    `curl -L https://github.com/iangoodnight/bigc2elastic/archive/master.zip > \
+    bigc2elastic.tar.gz && tar -zxvf bigc2elastic.tar.gz`
+3. Install dependencies with `cd bigc2elastic/ && npm install` for the entire
+   package, or with `cd bigc2elastic/ && npm install --production` to install
+   the package without development dependencies.
+4. Set your secret keys using `.env.example` and filling in the missing values.
+5. Rename `.env.example` with `mv .env.example .env`.
+6. If you have installed the entire package (with devDependencies) you can test
+   your installation with `npm test`.
+7. If everything looks right, you can run the application with `npm start`.
 
-### Jekyll Themes
+## Creating a cronjob
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/iangoodnight/bigc2elastic/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+1. Grant the 'execute' permission to the root of bigc2elastic:
+  `sudo chmod +x /opt/bigc2elastic/lib/index.js`
+2. Setup your crontab with the command:
+  `crontab -e`
+3. Crontab uses the syntax `m h dom mon dow command` referring to `minute`,
+   `hour`, `day of month`, `month`, and `day of week` respectively with `*`
+   actiing as a wildcard for 'any'.  Occasionally, the relative paths called
+   from node programs don't play nice with cronjobs, so we are going to start
+   our <command> by changing directories to the root of bigc2elastic.  So, if we
+   wanted to run our script once a week our crontab entry might look like:
+   `0 5 * * 1 cd /opt/bigc2elastic/lib/ && ./index.js`
 
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+By default, the output from cronjobs goes to `/var/mail/`, but
+you can override this by redirecting the output as part of the command. So the
+crontab entry:
+`0 5 * * 1 cd /opt/bigc2elastic/lib/ && ./index.js > ../run.log`
+Runs the program and saves the output from that last job to the file
+`/opt/bigc2elastic/run.log` for review.
