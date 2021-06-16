@@ -1,10 +1,12 @@
 {
   "name": "bigc2elastic",
   "version": "1.0.0",
-  "description": "Slurp up products through the BigC API and push them right back up to Elastic Search.",
+  "description":
+    "Slurp up products through the BigC API and push them right back up to Elastic Search.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepare": "husky install",
+    "test": "jest --passWithNoTests --findRelatedTests"
   },
   "author": "Ian Goodnight",
   "license": "ISC",
@@ -12,5 +14,26 @@
     "axios": "^0.21.1",
     "chalk": "^4.1.1",
     "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husk": "^0.5.3",
+    "jest": "^27.0.4",
+    "lint-staged": "^11.0.0",
+    "prettier": "^2.3.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --cache --fix",
+      "jest --bail --passWithNoTests --findRelatedTests"
+    ]
   }
 }

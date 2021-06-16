@@ -30,16 +30,20 @@ function formatCategory(category = {}) {
     url,
   };
 
-  if (is_visible) return [ is_visible, formatted ];
-  return [ false, { id } ];
+  if (is_visible) return [is_visible, formatted];
+  return [false, { id, name }];
 }
 
 module.exports = {
   partitionAndFormat: (data = []) => {
-    return data.reduce(([active, inactive], category) => {
-      const [ isVisible, formatted ] = formatCategory(category);
-      return isVisible ? [[...active, formatted], inactive] :
-        [active, [...inactive, formatted]];
-    }, [[],[]]);
+    return data.reduce(
+      ([active, inactive], category) => {
+        const [isVisible, formatted] = formatCategory(category);
+        return isVisible
+          ? [[...active, formatted], inactive]
+          : [active, [...inactive, formatted]];
+      },
+      [[], []]
+    );
   },
-}
+};

@@ -10,6 +10,47 @@
 
 const axios = require('axios');
 
+async function* fetchDocuments() {
+  const config = generateElasticConfig();
+
+  delete config.headers['Content-Type'];
+
+  let url = returnElasticEndPoint();
+
+  const pageSize = 'page[size]=100';
+
+  let current = 1;
+
+  while (url) {
+    const target = `${url}/list?${pageSize}&page[current]=${current}`;
+
+    const response = await axios.get(target, config);
+
+    const {
+      data: {
+        results,
+        meta: {
+          page: { total_pages },
+        },
+      },
+    } = response;
+
+    if (total_pages === current) url = null;
+
+    current++;
+
+    yield results;
+  }
+}
+
+function returnElasticEndPoint() {
+  const { ELASTIC_ENDPOINT: ENDPOINT } = process.env;
+
+  if (ENDPOINT === undefined) throw new Error('Elastic endpoint not found');
+
+  return `${ENDPOINT}/api/as/v1/engines/bulk-search-engine/documents`;
+}
+
 function generateElasticConfig() {
   const { ELASTIC_BEARER_TOKEN: TOKEN } = process.env;
 
@@ -17,34 +58,38 @@ function generateElasticConfig() {
 
   const headers = {
     'Content-Type': 'application/json',
-    'Authorization': authorization,
+    Authorization: authorization,
   };
 
   return { headers };
 }
 
 async function postDocuments(docs = []) {
-  const { ELASTIC_ENDPOINT: ENDPOINT } = process.env;
-
-  const url = `${ENDPOINT}/api/as/v1/engines/bulk-search-engine/documents`;
+  const url = returnElasticEndPoint();
 
   const config = generateElasticConfig();
 
-  const response = await axios.post(url, docs, config);
+  if (docs.length > 0) {
+    const response = await axios.post(url, docs, config);
 
-  return response;
+    return response;
+  }
+  return [];
 }
 
 async function deleteDocuments(docs = []) {
-  const { ELASTIC_ENDPOINT: ENDPOINT } = process.env;
-
-  const url = `${ENDPOINT}/api/as/v1/engines/bulk-search-engine/documents`;
+  const url = returnElasticEndPoint();
 
   const config = generateElasticConfig();
 
-  const response = await axios.delete(url, docs, config);
+  if (docs.length > 0) {
+    config.data = docs;
 
-  return response;
+    const response = await axios.delete(url, config);
+
+    return response;
+  }
+  return [];
 }
 
-module.exports = { postDocuments, deleteDocuments };
+module.exports = { fetchDocuments, postDocuments, deleteDocuments };

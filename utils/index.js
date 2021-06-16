@@ -10,4 +10,5 @@
 
 module.exports = {
   bigC: require('./bigcommerce.utils'),
+  elastic: require('./elastic.utils'),
 };

@@ -7,84 +7,185 @@
 
 'use strict';
 
-const axios = require('axios');
-
 const chalk = require('chalk');
 
 const {
   bigC: { listCategories, fetchProducts },
-  elastic: { postDocuments },
+  elastic: { fetchDocuments, deleteDocuments, postDocuments },
 } = require('./services');
 
-const { bigC: { partitionAndFormat } } = require('./utils');
+const {
+  bigC: { partitionAndFormat },
+  elastic: { formatForDeletion, parseResponse, partitionAndFormatProducts },
+} = require('./utils');
 
-const { log } = console;
+const { log, time, timeEnd } = console;
 
 require('dotenv').config();
 
-function formatProductsForElasticSearch(data = []) {
-  return data.map(product => {
-    const {
-      id,
-      name,
-      type,
-      sku,
-      description,
-      price,
-      search_keywords,
-      custom_url: { url }
-    } = product;
+const [, , ...flags] = process.argv;
 
-    return { id, name, type, sku, description, price, search_keywords, url };
-  });
-}
+const ONLY_PRODUCTS = flags.indexOf('--products-only') !== -1;
 
-async function run () {
-  log(chalk.green('Starting sync...'));
-  log(chalk.blue('Fetching categories from BigC...'));
+const DROP = flags.indexOf('--drop') !== -1;
+
+async function run() {
+  const processLabel = 'Elasticsearch Sync';
+
+  let functionLabel;
+
+  time(processLabel);
+
+  log(chalk.blue('Starting sync...'));
+
+  if (DROP) {
+    const iterator = fetchDocuments();
+
+    let ids = [];
+
+    functionLabel = 'Dropped existing documents';
+
+    time(functionLabel);
+    log(chalk.magenta('Drop requested...'));
+
+    let docPage = 1;
+
+    for await (const page of iterator) {
+      log(chalk.magenta(`Fetching page ${docPage}`));
+      for (const doc of page) {
+        const { id, name } = doc;
+        ids.push({ id, name });
+      }
+      docPage++;
+    }
+
+    while (ids.length > 0) {
+      const hundredDocs = ids.splice(0, 100);
+
+      log(chalk.magenta('Dropping in batches of 100'));
+
+      const { data: dropResponse } = await deleteDocuments(
+        formatForDeletion(hundredDocs)
+      );
+
+      const [runner, result, ...rest] = parseResponse(
+        dropResponse,
+        hundredDocs
+      );
+
+      log(chalk.magenta(runner));
+      log(chalk.green(result));
+
+      for (const exception of rest) {
+        log(chalk.yellow(exception));
+      }
+    }
+
+    timeEnd(functionLabel);
+  }
+
+  functionLabel = 'Fetch categories';
+
+  time(functionLabel);
+
+  log(chalk.magenta('Fetching categories from BigC...'));
 
   const categoryResponse = await listCategories();
 
-  const [ visibleCategories, hiddenCategories ] =
-    partitionAndFormat(categoryResponse);
+  timeEnd(functionLabel);
 
-  log(chalk.magenta('Deleting hidden categories...'));
+  if (!ONLY_PRODUCTS) {
+    const [, hiddenCategories] = partitionAndFormat(categoryResponse);
 
-  const deleteCategoryResponse = await deleteDocuments(hiddenCategories);
+    log(chalk.magenta('Deleting hidden categories...'));
 
-  log(chalk.red(`Deleted ${deleteCategoryResponse}`));
+    functionLabel = 'Deleted hidden categories';
 
-  const deleteCategoryErrs = deleteCategoryResponse.reduce()
+    time(functionLabel);
+
+    const { data: deleteCategoryResponse } = await deleteDocuments(
+      formatForDeletion(hiddenCategories)
+    );
+
+    const [runner, result, ...rest] = parseResponse(
+      deleteCategoryResponse,
+      hiddenCategories
+    );
+
+    log(chalk.magenta(runner));
+    log(chalk.green(result));
+
+    for (const unDeleted of rest) {
+      log(chalk.yellow(unDeleted));
+    }
+
+    timeEnd(functionLabel);
+  }
+
+  log(chalk.magenta('Fetching product pages'));
+
+  functionLabel = 'Fetched product pages';
+
   let totalPages = 0;
   const iterator = fetchProducts();
 
   for await (const page of iterator) {
     totalPages++;
+
     log(chalk.blue(`Page: ${totalPages}`));
 
-    const formatted = formatProductsForElasticSearch(page);
+    const [toUpdate, toDelete] = partitionAndFormatProducts(
+      page,
+      categoryResponse
+    );
 
-    for (const product of formatted) {
-      log(chalk.green(product.name));
+    let localLabel = 'Deleted hidden products';
+    log(chalk.magenta('Deleting hidden products...'));
+
+    time(localLabel);
+
+    const { data: deleteProductsResponse = [] } = await deleteDocuments(
+      formatForDeletion(toDelete)
+    );
+
+    const [deletedRunner, deletedResult, ...deletedRest] = parseResponse(
+      deleteProductsResponse,
+      toDelete
+    );
+
+    log(chalk.magenta(deletedRunner));
+    log(chalk.green(deletedResult));
+
+    for (const unDeleted of deletedRest) {
+      log(chalk.yellow(unDeleted));
     }
-    log(chalk.magenta('Posting to Elastic search...'));
 
-    const result = await postDocuments(formatted);
+    timeEnd(localLabel);
 
-    if (result.status === 200) log(chalk.green('Success'));
-    if (result.status !== 200) log(chalk.red('Failed', result.status));
+    localLabel = 'Updated products';
+    log(chalk.magenta('Updating products'));
+
+    time(localLabel);
+
+    const { data: postedDocuments = [] } = await postDocuments(toUpdate);
+
+    const [updatedRunner, updatedResult, ...updatedRest] = parseResponse(
+      postedDocuments,
+      toUpdate
+    );
+
+    log(chalk.magenta(updatedRunner));
+    log(chalk.green(updatedResult));
+
+    for (const remaining of updatedRest) {
+      log(chalk.yellow(remaining));
+    }
+
+    timeEnd(localLabel);
   }
+
   log(chalk.blue('Finished'));
+  timeEnd(processLabel);
 }
 
-// run();
-async function test() {
-  const categories = await listCategories();
-  const [visible, hidden] = partitionAndFormat(categories);
-  await postDocuments(visible);
-  await postDocuments(hidden);
-  console.log('Visible', visible);
-  console.log('Invisible', hidden);
-}
-
-test();
+run();
