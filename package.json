@@ -3,12 +3,27 @@
   "version": "1.0.0",
   "description":
     "Slurp up products through the BigC API and push them right back up to Elastic Search.",
-  "main": "index.js",
+  "keywords": [ "elasticsearch", "bigcommerce", "CLI", "documents", "sync" ],
+  "homepage": "https://iangoodnight.github.io/bigc2elastic",
+  "bugs": "https://github.com/iangoodnight/bigc2elastic/issues",
+  "main": "./lib/index.js",
+  "bin": "./lib/index.js",
+  "man": "./README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iangoodnight/bigc2elastic.git"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
   "scripts": {
     "prepare": "husky install",
+    "start": "node ./lib/index.js",
     "test": "jest --passWithNoTests --findRelatedTests"
   },
-  "author": "Ian Goodnight",
+  "author": "Ian Goodnight <goodnight.ian@gmail.com>",
+  "private": false,
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
