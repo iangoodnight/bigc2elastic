@@ -46,24 +46,24 @@ Flags may be combined if necessary (ie: `node ./lib/index.js --drop
 
 | Field | Type | Product | Category | Brand |
 | ----- | ---- | ------- | -------- | ----- |
-| brand | <string> | ✓ | ✗ | ✗ |
-| bucket | <string> | 'product' | 'category' | 'brand' |
-| calculated_price | <number> | ✓ | ✗ | ✗ |
-| categories | [<string>,...] | ✓ | ✗ | ✗ |
-| date_created | <string> | ✓ | ✗ | ✗ |
-| date_modified | <string> | ✓ | ✗ | ✗ |
-| description | <string> | ✓ | ✓ | ✗ |
-| id | <string> | `bc2eP<id>` | `bc2eC<id>` | `bc2eB<id>` |
-| mpn | <string> | ✓ | ✗ | ✗ |
-| name | <string> | ✓ | ✓ | ✓ |
-| page_title | <string> | ✓ | ✓ | ✓ |
-| price | <number> | ✓ | ✗ | ✗ |
-| search_keywords | <string> | ✓ | ✓ | ✓ |
-| sort_order | <number> | ✓ | ✓ | ✗ |
-| total_sold | <number> | ✓ | ✗ | ✗ |
-| upc | <string> | ✓ | ✗ | ✗ |
-| view_count | <number> | ✓ | ✓ | ✗ |
-| url | <string> | ✓ | ✓ | ✓ |
+| brand | `<string>` | ✓ | ✗ | ✗ |
+| bucket | `<string>` | 'product' | 'category' | 'brand' |
+| calculated_price | `<number>` | ✓ | ✗ | ✗ |
+| categories | [`<string>`,...] | ✓ | ✗ | ✗ |
+| date_created | `<string>` | ✓ | ✗ | ✗ |
+| date_modified | `<string>` | ✓ | ✗ | ✗ |
+| description | `<string>` | ✓ | ✓ | ✗ |
+| id | `<string>` | `bc2eP<id>` | `bc2eC<id>` | `bc2eB<id>` |
+| mpn | `<string>` | ✓ | ✗ | ✗ |
+| name | `<string>` | ✓ | ✓ | ✓ |
+| page_title | `<string>` | ✓ | ✓ | ✓ |
+| price | `<number>` | ✓ | ✗ | ✗ |
+| search_keywords | `<string>` | ✓ | ✓ | ✓ |
+| sort_order | `<number>` | ✓ | ✓ | ✗ |
+| total_sold | `<number>` | ✓ | ✗ | ✗ |
+| upc | `<string>` | ✓ | ✗ | ✗ |
+| view_count | `<number>` | ✓ | ✓ | ✗ |
+| url | `<string>` | ✓ | ✓ | ✓ |
 
 ## Setup
 
