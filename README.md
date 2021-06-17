@@ -47,9 +47,9 @@ Flags may be combined if necessary (ie: `node ./lib/index.js --drop
 | Field | Type | Product | Category | Brand |
 | ----- | ---- | ------- | -------- | ----- |
 | brand | `<string>` | ✓ | ✗ | ✗ |
-| bucket | `<string>` | 'product' | 'category' | 'brand' |
+| bucket | `<string>` | `'product'` | `'category'` | `'brand'` |
 | calculated_price | `<number>` | ✓ | ✗ | ✗ |
-| categories | [`<string>`,...] | ✓ | ✗ | ✗ |
+| categories | [`<string>,...]` | ✓ | ✗ | ✗ |
 | date_created | `<string>` | ✓ | ✗ | ✗ |
 | date_modified | `<string>` | ✓ | ✗ | ✗ |
 | description | `<string>` | ✓ | ✓ | ✗ |
