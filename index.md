@@ -21,15 +21,49 @@ Running this utility will:
 
 Optional flags include:
 
-- `--products-only` (ie: `bigc2elastic --products-only`)
-- `--drop` (ie: `bigc2elastic --drop`)
+| Flag | Example | Effect |
+| ---- | ------- | ------ |
+| drop | `node ./lib/index.js --drop` | Drops existing documents first (reset) |
+| products-only | `node ./lib/index.js --products-only` | Syncs products only |
+| no-categories | `node ./lib/index.js --no-categories` | Skips category sync |
+| no-brands | `node ./lib/index.js --no-brands` | Skips brand sync |
 
-Running the CLI with the `--products-only` flag still queries BigCommerce for 
-categories to decorate products with their cateogry names, but it will not drop
-or update categories within elasticsearch.
+Running the CLI with the `--products-only` flag still queries BigCommerce for
+categories and brands to decorate product documents with their category and
+brand names, but it will not drop or update category or brand documents within
+elasticsearch.
+
+Optionally, just the brand documents or just the category documents may be
+omitted with the appropriate flags (ie: `--no-categories`, `--no-brands`).
 
 Running the CLI with the `--drop` flag will drop all existing documents from
 elasticsearch before beginning the updates (effectively starting clean).
+
+Flags may be combined if necessary (ie: `node ./lib/index.js --drop
+--no-categories`).
+
+## Document Schema
+
+| Field | Type | Product | Category | Brand |
+| ----- | ---- | ------- | -------- | ----- |
+| brand | `<string>` | ✓ | ✗ | ✗ |
+| bucket | `<string>` | `'product'` | `'category'` | `'brand'` |
+| calculated_price | `<number>` | ✓ | ✗ | ✗ |
+| categories | [`<string>,...]` | ✓ | ✗ | ✗ |
+| date_created | `<string>` | ✓ | ✗ | ✗ |
+| date_modified | `<string>` | ✓ | ✗ | ✗ |
+| description | `<string>` | ✓ | ✓ | ✗ |
+| id | `<string>` | `bc2eP<id>` | `bc2eC<id>` | `bc2eB<id>` |
+| mpn | `<string>` | ✓ | ✗ | ✗ |
+| name | `<string>` | ✓ | ✓ | ✓ |
+| page_title | `<string>` | ✓ | ✓ | ✓ |
+| price | `<number>` | ✓ | ✗ | ✗ |
+| search_keywords | `<string>` | ✓ | ✓ | ✓ |
+| sort_order | `<number>` | ✓ | ✓ | ✗ |
+| total_sold | `<number>` | ✓ | ✗ | ✗ |
+| upc | `<string>` | ✓ | ✗ | ✗ |
+| view_count | `<number>` | ✓ | ✓ | ✗ |
+| url | `<string>` | ✓ | ✓ | ✓ |
 
 ## Setup
 
