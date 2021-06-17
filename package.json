@@ -14,13 +14,13 @@
     "url": "https://github.com/iangoodnight/bigc2elastic.git"
   },
   "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
   },
   "scripts": {
     "prepare": "husky install",
     "start": "node ./lib/index.js",
-    "test": "jest --passWithNoTests --findRelatedTests"
+    "test": "jest --passWithNoTests --collectCoverage"
   },
   "author": "Ian Goodnight <goodnight.ian@gmail.com>",
   "private": false,
