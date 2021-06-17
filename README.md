@@ -21,10 +21,17 @@ Running this utility will:
 
 Optional flags include:
 
+| Flag | Example |
+| ---- | ------- |
+| drop | `node ./lib/index.js --drop` |
+| products-only | `node ./lib/index.js --products-only` |
+| no-categories | `node ./lib/index.js --no-categories` |
+| no-brands | `node ./lib/index.js --no-brands` |
+
 - `--products-only` (ie: `bigc2elastic --products-only`)
 - `--drop` (ie: `bigc2elastic --drop`)
 
-Running the CLI with the `--products-only` flag still queries BigCommerce for 
+Running the CLI with the `--products-only` flag still queries BigCommerce for
 categories to decorate products with their cateogry names, but it will not drop
 or update categories within elasticsearch.
 
