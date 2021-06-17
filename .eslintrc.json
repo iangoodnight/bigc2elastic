@@ -21,6 +21,12 @@
       "error",
       "unix"
     ],
+    "max-len": [
+      "error",
+      {
+        "code": 80
+      }
+    ],
     "prettier/prettier": "error",
     "quotes": [
       "error",
