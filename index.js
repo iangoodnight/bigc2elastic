@@ -12,7 +12,7 @@ const chalk = require('chalk');
 const {
   bigC: { listCategories, fetchBrands, fetchProducts },
   elastic: { fetchDocuments, deleteDocuments, postDocuments },
-} = require('./services');
+} = require('./lib/services');
 
 const {
   bigC: { partitionAndFormat },
@@ -22,7 +22,7 @@ const {
     parseResponse,
     partitionAndFormatProducts,
   },
-} = require('./utils');
+} = require('./lib/utils');
 
 const { log, time, timeEnd } = console;
 

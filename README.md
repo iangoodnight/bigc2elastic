@@ -23,10 +23,10 @@ Optional flags include:
 
 | Flag | Example | Effect |
 | ---- | ------- | ------ |
-| drop | `node ./lib/index.js --drop` | Drops existing documents first (reset) |
-| products-only | `node ./lib/index.js --products-only` | Syncs products only |
-| no-categories | `node ./lib/index.js --no-categories` | Skips category sync |
-| no-brands | `node ./lib/index.js --no-brands` | Skips brand sync |
+| drop | `node ./index.js --drop` | Drops existing documents first (reset) |
+| products-only | `node ./index.js --products-only` | Syncs products only |
+| no-categories | `node ./index.js --no-categories` | Skips category sync |
+| no-brands | `node ./index.js --no-brands` | Skips brand sync |
 
 Running the CLI with the `--products-only` flag still queries BigCommerce for
 categories and brands to decorate product documents with their category and
@@ -39,7 +39,7 @@ omitted with the appropriate flags (ie: `--no-categories`, `--no-brands`).
 Running the CLI with the `--drop` flag will drop all existing documents from
 elasticsearch before beginning the updates (effectively starting clean).
 
-Flags may be combined if necessary (ie: `node ./lib/index.js --drop
+Flags may be combined if necessary (ie: `node ./index.js --drop
 --no-categories`).
 
 ## Document Schema
@@ -90,7 +90,7 @@ Flags may be combined if necessary (ie: `node ./lib/index.js --drop
 ## Creating a cronjob
 
 1. Grant the 'execute' permission to the root of bigc2elastic:
-  `sudo chmod +x /opt/bigc2elastic/lib/index.js`
+  `sudo chmod +x /opt/bigc2elastic/index.js`
 2. Setup your crontab with the command:
   `crontab -e`
 3. Crontab uses the syntax `m h dom mon dow command` referring to `minute`,
@@ -99,11 +99,11 @@ Flags may be combined if necessary (ie: `node ./lib/index.js --drop
    from node programs don't play nice with cronjobs, so we are going to start
    our <command> by changing directories to the root of bigc2elastic.  So, if we
    wanted to run our script once a week our crontab entry might look like:
-   `0 5 * * 1 cd /opt/bigc2elastic/lib/ && ./index.js`
+   `0 5 * * 1 cd /opt/bigc2elastic/ && ./index.js`
 
 By default, the output from cronjobs goes to `/var/mail/`, but
 you can override this by redirecting the output as part of the command. So the
 crontab entry:
-`0 5 * * 1 cd /opt/bigc2elastic/lib/ && ./index.js > ../run.log`
+`0 5 * * 1 cd /opt/bigc2elastic/ && ./index.js > ../run.log`
 Runs the program and saves the output from that last job to the file
 `/opt/bigc2elastic/run.log` for review.

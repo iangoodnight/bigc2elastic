@@ -6,8 +6,8 @@
   "keywords": [ "elasticsearch", "bigcommerce", "CLI", "documents", "sync" ],
   "homepage": "https://iangoodnight.github.io/bigc2elastic",
   "bugs": "https://github.com/iangoodnight/bigc2elastic/issues",
-  "main": "./lib/index.js",
-  "bin": "./lib/index.js",
+  "main": "./index.js",
+  "bin": "./index.js",
   "man": "./README.md",
   "repository": {
     "type": "git",
