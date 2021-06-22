@@ -1,3 +1,5 @@
+![bigc2elastic](https://github.com/iangoodnight/bigc2elastic/blob/main/bigc2elastic.png)
+
 # bigc2elastic
 
 A lightweight CLI utility designed to pull product and category data from
