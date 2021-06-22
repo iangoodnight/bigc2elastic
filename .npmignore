@@ -1,0 +1,8 @@
+*.test.js
+.editorconfig
+.env.example
+.eslintignore
+.eslintrc.json
+.prettierignore
+.prettierrc.json
+jest.config.js
