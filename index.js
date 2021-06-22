@@ -28,6 +28,12 @@ const { log, time, timeEnd } = console;
 
 require('dotenv').config();
 
+const fs = require('fs');
+
+const inquirer = require('inquirer');
+
+const ui = new inquirer.ui.BottomBar();
+
 const [, , ...flags] = process.argv;
 
 const ONLY_PRODUCTS = flags.indexOf('--products-only') !== -1;
@@ -37,6 +43,19 @@ const DROP = flags.indexOf('--drop') !== -1;
 const NO_BRANDS = flags.indexOf('--no-brands') !== -1;
 
 const NO_CATEGORIES = flags.indexOf('--no-categories') !== -1;
+
+let INIT = flags.indexOf('--init') !== -1;
+
+const { env: e } = process;
+
+if (
+  !e.BIGC_STORE_HASH ||
+  !e.BIGC_AUTH_TOKEN ||
+  !e.ELASTIC_ENDPOINT ||
+  !e.ELASTIC_ENGINE ||
+  !e.ELASTIC_BEARER_TOKEN
+)
+  INIT = true;
 
 async function run() {
   const processLabel = 'Elasticsearch Sync';
@@ -323,4 +342,123 @@ async function run() {
   timeEnd(processLabel);
 }
 
-run();
+function formatEnv(answers) {
+  const env = ['# BIG C VARIABLES'];
+  env.push(`BIGC_STORE_HASH=${answers.storeHash}`);
+  env.push(`BIGC_AUTH_TOKEN=${answers.bigCAuth}`);
+  env.push('# ELASTIC SEARCH VARIABLES');
+  env.push(`ELASTIC_ENDPOINT=${answers.elasticEndPoint}`);
+  env.push(`ELASTIC_ENGINE=${answers.elasticEngine}`);
+  env.push(`ELASTIC_BEARER_TOKEN=${answers.elasticToken}`);
+  return env.join('\n');
+}
+
+if (INIT) {
+  const environmentQuestions = [
+    {
+      type: 'input',
+      name: 'storeHash',
+      message: 'What is your BigCommerce store hash? (ie: 10lp3d)',
+      validate: (answer) => {
+        if (answer.length !== 6) {
+          log('\nThat does not look right');
+          return false;
+        }
+        return true;
+      },
+    },
+    {
+      type: 'input',
+      name: 'bigCAuth',
+      message:
+        'What is your BigCommerce API auth token? (31 alphanumeric chars)',
+      validate: (answer) => {
+        if (!answer.length) {
+          log('\nThat does not look right');
+          return false;
+        }
+        return true;
+      },
+    },
+    {
+      type: 'input',
+      name: 'elasticEndPoint',
+      message:
+        'What is the endpoint of your elasticsearch db? (ie: https://' +
+        'foo.com)',
+      validate: (answer) => {
+        const re = /^https?:\/\/.*/;
+        if (!answer.match(re)) {
+          log('\nThat does not look right');
+          return false;
+        }
+        return true;
+      },
+    },
+    {
+      type: 'input',
+      name: 'elasticEngine',
+      message:
+        'What is the name of your elasticsearch engine? (ie: ' +
+        'foo-search-engine)',
+      validate: (answer) => {
+        if (!answer.length) {
+          log('\nThat does not look right');
+          return false;
+        }
+        return true;
+      },
+    },
+    {
+      type: 'input',
+      name: 'elasticToken',
+      message: 'Please provide your elasticsearch bearer token',
+      validate: (answer) => {
+        if (!answer.length) {
+          log('\nThat does not look right');
+          return false;
+        }
+        return true;
+      },
+    },
+    {
+      type: 'confirm',
+      name: 'confirm',
+      message: (answers) => {
+        log('ENV variables:\n');
+        log(formatEnv(answers));
+        log('\nWrite ENV variabled to .env?');
+      },
+    },
+  ];
+
+  ui.log.write('bigc2elastic init: setting environmental variables');
+
+  inquirer
+    .prompt(environmentQuestions)
+    .then((answers) => {
+      if (!answers.confirm) {
+        log('Discarding ENV variables.');
+        return;
+      }
+      const env = formatEnv(answers);
+      fs.writeFile('./.env', env, (err) => {
+        if (err) {
+          log('Problems writing to filesystem...');
+          console.error(err);
+          return;
+        }
+        log('ENV created!');
+      });
+    })
+    .catch((error) => {
+      if (error.isTtyError) {
+        // Prompt can't be rendered in the current environment
+        log('This terminal is not playing nice');
+      } else {
+        log(error);
+      }
+    });
+} else {
+  run();
+}

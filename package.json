@@ -1,9 +1,14 @@
 {
   "name": "bigc2elastic",
   "version": "1.0.0",
-  "description":
-    "Slurp up products through the BigC API and push them right back up to Elastic Search.",
-  "keywords": [ "elasticsearch", "bigcommerce", "CLI", "documents", "sync" ],
+  "description": "Slurp up products through the BigC API and push them right back up to Elastic Search.",
+  "keywords": [
+    "elasticsearch",
+    "bigcommerce",
+    "CLI",
+    "documents",
+    "sync"
+  ],
   "homepage": "https://iangoodnight.github.io/bigc2elastic",
   "bugs": "https://github.com/iangoodnight/bigc2elastic/issues",
   "main": "./index.js",
@@ -28,7 +33,8 @@
   "dependencies": {
     "axios": "^0.21.1",
     "chalk": "^4.1.1",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "inquirer": "^8.1.1"
   },
   "devDependencies": {
     "eslint": "^7.28.0",
