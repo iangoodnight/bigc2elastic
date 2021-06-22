@@ -13,7 +13,7 @@
   "bugs": "https://github.com/iangoodnight/bigc2elastic/issues",
   "main": "./index.js",
   "bin": "./index.js",
-  "man": "./README.md",
+  "man": "./bigc2elastic.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/iangoodnight/bigc2elastic.git"

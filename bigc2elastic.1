@@ -1,0 +1,65 @@
+.TH "BIGC2ELASTIC" "" "June 2021" "" ""
+.SH "NAME"
+\fBBIGC2ELASTIC\fR
+.QP
+.P
+bigc2elastic \- A lightweight CLI utility designed to pull product and category
+data from BigCommerce stores and push that data back up to an elasticsearch
+instance\.
+
+.
+.P
+To learn more, check out the online documentation \fIhttps://iangoodnight\.github\.io/bigc2elastic/\fR
+.SH SYNOPSIS
+.P
+\fBbigc2elastic [\-\-init] [\-\-drop] [\-\-products\-only] [\-\-no\-categories] [\-\-no\-brands]\fP
+.SH DESCRIPTION
+.P
+bigc2elastic is ~A lightweight CLI utility designed to pull product and category
+data from BigCommerce stores and push that data back up to an elasticsearch instance\.
+.SH WEBSITE
+.P
+\fIhttps://iangoodnight\.github\.io/bigc2elastic/\fR
+.SH EXAMPLES
+.P
+\fBnpm install @goodnight_ian/bigc2elastic \-g\fP
+.P
+\fBbigc2elastic \-\-init\fP
+.P
+\fBbigc2elastic \-\-drop\fP
+.P
+\fBbigc2elastic \-\-products\-only\fP
+.P
+\fBbigc2elastic \-\-drop \-\-no\-brands\fP
+.SH OPTIONS
+.P
+\fB\-\-init\fP
+  Set required ENV variables
+.P
+\fB\-\-drop\fP
+  Drop existing elsticsearch documents prior to sync
+.P
+\fB\-\-products\-only\fP
+  Fetches categories and brands from bigCommerce to decorate products, but does
+  not sync them\.
+.P
+\fB\-\-no\-brands\fP
+  Sync products and categories, omit brands
+.P
+\fB\-\-no\-categories\fP
+  Sync products and brands, omit categories
+.SH CONFIGURATION
+.P
+Running \fBbigc2elastic \-\-init\fP or running \fBbigc2elastic\fP with missing environment
+variables triggers the initialization dialogue\.  This utility will take you
+through setting you ENV variables and saves them at \fB~/\.env\fP\|\.
+.SH BUGS
+.P
+Please report any bugs to https://github\.com/iangoodnight/bigc2elastic
+.SH License
+.P
+Copyright (c) 2021, Ian Goodnight (ISC License)
+.SH SEE ALSO
+.P
+node\.js(1)
+
