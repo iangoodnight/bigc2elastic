@@ -1,7 +1,11 @@
 *.test.js
+coverage
 .editorconfig
 .env.example
+.env
+.husky
 .eslintignore
+.eslintcache
 .eslintrc.json
 .prettierignore
 .prettierrc.json
