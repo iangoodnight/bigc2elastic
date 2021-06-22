@@ -1,4 +1,4 @@
-![bigc2elastic](https://github.com/iangoodnight/bigc2elastic/blob/main/bigc2elastic.png)
+![bigc2elastic](/assets/bigc2elastic.png)
 
 # bigc2elastic
 
