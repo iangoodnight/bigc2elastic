@@ -1,5 +1,5 @@
 {
-  "name": "bigc2elastic",
+  "name": "@goodnight_ian/bigc2elastic",
   "version": "1.0.0",
   "description": "Slurp up products through the BigC API and push them right back up to Elastic Search.",
   "keywords": [
