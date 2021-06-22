@@ -7,6 +7,12 @@
 
 'use strict';
 
+/**
+ *
+ * Dependencies and constants
+ *
+ **/
+
 const chalk = require('chalk');
 
 const {
@@ -57,7 +63,19 @@ if (
 )
   INIT = true;
 
+/**
+ *
+ * MAIN
+ *
+ **/
+
 async function run() {
+  /**
+   *
+   * Labels/housekeeping
+   *
+   **/
+
   const processLabel = 'Elasticsearch Sync';
 
   let functionLabel;
@@ -65,6 +83,12 @@ async function run() {
   time(processLabel);
 
   log(chalk.blue('Starting sync...'));
+
+  /**
+   *
+   * If --drop, fetch and drop docs in batches of 100
+   *
+   **/
 
   if (DROP) {
     const iterator = fetchDocuments();
@@ -111,6 +135,14 @@ async function run() {
 
     timeEnd(functionLabel);
   }
+
+  /**
+   *
+   * Fetch categories to provide cateogry names to product docs.
+   * Unless --no-categories or --products-only, push category docs to
+   * elasticsearch in batches of 100
+   *
+   **/
 
   functionLabel = 'Fetch categories';
 
@@ -198,6 +230,14 @@ async function run() {
     timeEnd(functionLabel);
   }
 
+  /**
+   *
+   * Fetch brands to provide brand names to product docs.
+   * Unless --no-brands or --products-only, push resulting brand docs up to
+   * elasticsearch in batches of 100.
+   *
+   **/
+
   functionLabel = 'Fetch brands';
 
   time(functionLabel);
@@ -275,6 +315,13 @@ async function run() {
     timeEnd(functionLabel);
   }
 
+  /**
+   *
+   * Fetch products from BigC, one page at a time.
+   * Label brand and categories and push resulting docs back up to elasticsearch
+   *
+   **/
+
   log(chalk.magenta('Fetching product pages'));
 
   functionLabel = 'Fetched product pages';
@@ -338,9 +385,22 @@ async function run() {
     timeEnd(localLabel);
   }
 
+  /**
+   *
+   * Cleanup
+   *
+   **/
+
   log(chalk.blue('Finished'));
   timeEnd(processLabel);
+  process.exit(0);
 }
+
+/**
+ *
+ * Inquirer .env setup for --init
+ *
+ **/
 
 function formatEnv(answers) {
   const env = ['# BIG C VARIABLES'];
@@ -352,6 +412,12 @@ function formatEnv(answers) {
   env.push(`ELASTIC_BEARER_TOKEN=${answers.elasticToken}`);
   return env.join('\n');
 }
+
+/**
+ *
+ * check for .env and begin init if keys are missing
+ *
+ **/
 
 if (INIT) {
   const environmentQuestions = [
@@ -460,5 +526,10 @@ if (INIT) {
       }
     });
 } else {
-  run();
+  try {
+    run();
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 }
